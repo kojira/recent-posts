@@ -113,13 +113,21 @@ class Handler:
                 )
                 if setting:
                     channels = setting["channels"].split(",")
-                    channels.append(str(message.channel.id))
+                    if len(commands) > 2:
+                        pattern = r"^\d{19}$"
+                        if re.match(pattern, commands[2]):
+                            channels.append(commands[2])
+                        else:
+                            await channel.send("チャンネルIDがおかしいにゃ！")
+                    else:
+                        channels = setting["channels"].split(",")
+                        channels.append(str(message.channel.id))
                     self.db.tables["webhook_setting"].update_channels(
                         str(message.guild.id), commands[1], ",".join(channels)
                     )
                     await channel.send("登録したにゃ。")
                 else:
-                    await channel.send("まだそのカテゴリの設定がないわん。！設定コマンドで設定するんだにゃ。")
+                    await channel.send("まだそのカテゴリの設定がないにゃん。！設定コマンドで設定するんだにゃ。")
             else:
                 await channel.send("「！登録 カテゴリ名」でこのチャンネルを登録するんだにゃ。")
             return True
